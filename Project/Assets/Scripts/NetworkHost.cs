@@ -24,7 +24,8 @@ public class NetworkHost : MonoBehaviour {
 
     void JoinedRoom(SocketIOEvent e)
     {
-
+        PlayerPos n = JsonMapper.ToObject<PlayerPos>(e.data.ToString());
+        self.players.Add(n);
     }
 
     public void StartGame()

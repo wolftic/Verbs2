@@ -22,4 +22,9 @@ io.on('connection', function(socket){
 	socket.on("move",function(dataG){
 		console.log(dataG);
 	});
+	
+	socket.on("dead",function(dataG){
+		
+		
+	});
 });
