@@ -17,7 +17,7 @@ public class PlayerMovement : MonoBehaviour {
 	}
 	
 	void Update () {
-		//_networkPlayer.pos = transform.position;
+		_networkPlayer.pos = transform.position;
 
 		_onGround = Physics.Raycast (transform.position, Vector3.down, 0.55f);
 		Debug.DrawRay (transform.position, Vector3.down * 0.55f);
