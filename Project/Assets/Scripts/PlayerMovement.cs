@@ -3,7 +3,7 @@ using System.Collections;
 
 [RequireComponent(typeof(NetworkPlayer))]
 [RequireComponent(typeof(Rigidbody))]
-public class Player : MonoBehaviour {
+public class PlayerMovement : MonoBehaviour {
 	private NetworkPlayer _networkPlayer;
 	private Rigidbody _rigidbody;
 
@@ -19,16 +19,18 @@ public class Player : MonoBehaviour {
 	void Update () {
 		//_networkPlayer.pos = transform.position;
 
-		_onGround = Physics.Raycast (transform.position, Vector3.down, 1.1f);
-		Debug.DrawRay (transform.position, Vector3.down * 1.1f);
+		_onGround = Physics.Raycast (transform.position, Vector3.down, 0.55f);
+		Debug.DrawRay (transform.position, Vector3.down * 0.55f);
 
-		if (Input.GetButtonDown ("Jump") && _onGround) {
-			_rigidbody.AddForce(new Vector3(0, 100, 0), ForceMode.Impulse);
+		if (Input.GetButtonUp ("Jump") && _onGround) {
+			_rigidbody.AddForce(new Vector3(0, _jumpForce, 0), ForceMode.Impulse);
 		}
 	}
 
 	void FixedUpdate () {
 		Vector2 axis = new Vector2 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical"));
-		_rigidbody.velocity = new Vector3 (axis.x, _rigidbody.velocity.y, axis.y) * _speed;
+		Vector3 goToPosition = new Vector3 (axis.x, 0f, axis.y) * _speed * Time.fixedDeltaTime;
+		_rigidbody.MovePosition(transform.TransformDirection(new Vector3 (0f, 0f, axis.y) * _speed * Time.fixedDeltaTime) + transform.position);
+		transform.Rotate (transform.up.normalized, axis.x * _speed);
 	}
 }
