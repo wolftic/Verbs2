@@ -32,11 +32,14 @@ public class NetworkManager : MonoBehaviour {
         Room room = new Room();
         room.id = 10/*Random.Range(1, 100)*/;
         GameObject host = Instantiate(hostPrefab);
+        host.transform.SetParent(GameObject.Find("Canvas").transform);
         host.GetComponent<NetworkHost>().self = room;
         _rooms.Add(room);
 
         PlayerPos player = new PlayerPos();
         player.name = "hey";
+
+        host.GetComponent<NetworkHost>().localPlayer = player;
 
         room.players.Add(player);
 
@@ -62,7 +65,9 @@ public class NetworkManager : MonoBehaviour {
                 _rooms[i].players.Add(player);
 
                 GameObject host = Instantiate(hostPrefab);
+                host.transform.SetParent(GameObject.Find("Canvas").transform);
                 host.GetComponent<NetworkHost>().self = _rooms[i];
+                host.GetComponent<NetworkHost>().localPlayer = player;
 
                 string roomString = JsonMapper.ToJson(_rooms[i]);
                 _socket.Emit("joinRoom",new JSONObject(roomString));

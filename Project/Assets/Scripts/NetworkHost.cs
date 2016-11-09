@@ -5,10 +5,16 @@ using LitJson;
 
 public class NetworkHost : MonoBehaviour {
 
-    [SerializeField]
+    public PlayerPos localPlayer;
+
     public Room self;
 
     private SocketIOComponent _socket;
+
+    [SerializeField]
+    private GameObject _localPrefab;
+    [SerializeField]
+    private GameObject _otherPrefab;
 
     void Start()
     {
@@ -19,5 +25,19 @@ public class NetworkHost : MonoBehaviour {
     void JoinedRoom(SocketIOEvent e)
     {
 
+    }
+
+    public void StartGame()
+    {
+        for (int i = 0; i < self.players.Count; i++)
+        {
+            if(self.players[i].name == localPlayer.name)
+            {
+                GameObject local = Instantiate(_localPrefab);
+            } else
+            {
+                GameObject other = Instantiate(_otherPrefab);
+            }
+        }
     }
 }
