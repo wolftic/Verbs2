@@ -3,11 +3,13 @@ using System.Collections;
 using SocketIO;
 using LitJson;
 
-public class Pos
+[System.Serializable]
+public class PlayerPos
 {
-    public float x;
-    public float y;
-    public float z;
+    public string name;
+    public double x;
+    public double y;
+    public double z;
 }
 
 public class NetworkPlayer : MonoBehaviour {
@@ -23,10 +25,10 @@ public class NetworkPlayer : MonoBehaviour {
 
     void Update()
     {
-        Pos p = new Pos();
-        p.x = pos.x;
-        p.y = pos.y;
-        p.z = pos.z;
+        PlayerPos p = new PlayerPos();
+        p.x = (double)pos.x;
+        p.y = (double)pos.y;
+        p.z = (double)pos.z;
         string position = JsonMapper.ToJson(p);
         _socket.Emit("move", new JSONObject(position));
     }
