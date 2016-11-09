@@ -35,6 +35,7 @@ public class NetworkHost : MonoBehaviour {
             if(self.players[i].name == localPlayer.name)
             {
                 GameObject local = Instantiate(_localPrefab);
+				GameObject.FindGameObjectWithTag ("Camera").GetComponent<PlayerCamera> ().target = local.transform;
             } else
             {
                 GameObject other = Instantiate(_otherPrefab);

@@ -2,6 +2,7 @@
 using System.Collections;
 
 [RequireComponent(typeof(NetworkPlayer))]
+[RequireComponent(typeof(PlayerAttack))]
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour {
 	private NetworkPlayer _networkPlayer;

@@ -18,14 +18,16 @@ public class NetworkPlayer : MonoBehaviour {
 
     public Vector3 pos;
 
+	PlayerPos p;
+
     void Start()
     {
+		p = new PlayerPos();
         _socket = GameObject.Find("Socket").GetComponent<SocketIOComponent>();
     }
 
     void Update()
     {
-        PlayerPos p = new PlayerPos();
         p.x = (double)pos.x;
         p.y = (double)pos.y;
         p.z = (double)pos.z;
