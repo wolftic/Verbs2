@@ -32,7 +32,6 @@ public class NetworkManager : MonoBehaviour {
         Room room = new Room();
         room.id = 10/*Random.Range(1, 100)*/;
         GameObject host = Instantiate(hostPrefab);
-        host.transform.SetParent(GameObject.Find("Canvas").transform);
         host.GetComponent<NetworkHost>().self = room;
         _rooms.Add(room);
 
@@ -65,7 +64,6 @@ public class NetworkManager : MonoBehaviour {
                 _rooms[i].players.Add(player);
 
                 GameObject host = Instantiate(hostPrefab);
-                host.transform.SetParent(GameObject.Find("Canvas").transform);
                 host.GetComponent<NetworkHost>().self = _rooms[i];
                 host.GetComponent<NetworkHost>().localPlayer = player;
 

@@ -21,6 +21,12 @@ io.on('connection', function(socket){
 	
 	socket.on("move",function(dataG){
 		console.log(dataG);
+		socket.broadcast.emit("OnMove",dataG);
+	});
+	
+	socket.on("StartGame",function(){
+		console.log("otherstart");
+		socket.broadcast.emit("otherStart");
 	});
 	
 	socket.on("dead",function(dataG){
