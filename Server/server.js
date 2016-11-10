@@ -2,23 +2,30 @@ var io = require('socket.io')({
 	transports: ['websocket'],
 });
 
-io.attach(3002);
+io.attach(3003);
 
-var rooms = [];
+var activePlayers = [];
 
 io.on('connection', function(socket){
 	console.log(socket.id);
 	
-	socket.emit("name",{
+	var dataS = {
 		name: socket.id,
-	});
+	}
 	
-	if(rooms.length != 0) {
-		socket.emit("roomCreated", rooms[0]);
+	activePlayers.push(dataS);
+	
+	socket.emit("name",dataS);
+	
+	for(var i = 0; i < activePlayers.length; i++){
+		if(activePlayers[i].name != socket.id){
+			console.log(activePlayers[i]);
+			socket.emit("otherStart",activePlayers[i]);
+		}
 	}
 	
 	socket.on("onOtherStart",function(dataG){
-		console.log("New player joined");
+		//console.log("New player joined");
 		socket.broadcast.emit("otherStart", dataG);
 	});
 	
@@ -37,5 +44,15 @@ io.on('connection', function(socket){
 	
 	socket.on("respawn",function(dataG){
 		socket.broadcast.emit("OnRespawn", dataG);
+	});
+	
+	socket.on("disconnect", function(){
+		for(var i = 0; i < activePlayers.length; i++){
+			if(activePlayers[i].name == socket.id){
+				console.log(socket.id + " dc");
+				activePlayers.splice(i,1);
+				socket.broadcast.emit("disconnection",activePlayers[i]);
+			}
+		}
 	});
 });

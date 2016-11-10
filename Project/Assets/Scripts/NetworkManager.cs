@@ -30,6 +30,7 @@ public class NetworkManager : MonoBehaviour {
         _socket = GameObject.Find("Socket").GetComponent<SocketIOComponent>();
         _socket.On("name", SetName);
         _socket.On("otherStart", otherStart);
+        _socket.On("disconnection", dc);
     }
 
     void SetName(SocketIOEvent e)
@@ -38,7 +39,6 @@ public class NetworkManager : MonoBehaviour {
         pname.name = n.name;
         _players.Add(n);
 
-        SpawnPlayers();
     }
 
     public void StartGame()
@@ -62,16 +62,16 @@ public class NetworkManager : MonoBehaviour {
 
     }
 
-    void SpawnPlayers()
+    void dc(SocketIOEvent e)
     {
+        Name n = JsonMapper.ToObject<Name>(e.data.ToString());
         for (int i = 0; i < _players.Count; i++)
         {
-            if (_players[i].name != pname.name)
+            if (_players[i].name == n.name)
             {
-                GameObject other = Instantiate(_otherPrefab);
-                Debug.Log(_players[i].name);
-                other.transform.name = _players[i].name;
+                Destroy(GameObject.Find(n.name));
             }
         }
     }
+
 }
