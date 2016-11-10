@@ -13,23 +13,15 @@ io.on('connection', function(socket){
 		name: socket.id,
 	});
 	
-	socket.on("newRoom",function(dataG){
-		console.log("New room created: ");
-		console.log(dataG);
-		rooms.push(dataG);
-		socket.broadcast.emit("roomCreated", dataG);
+	if(rooms.length != 0) {
+		socket.emit("roomCreated", rooms[0]);
+	}
+	
+	socket.on("onOtherStart",function(dataG){
+		console.log("New player joined");
+		socket.broadcast.emit("otherStart", dataG);
 	});
 	
-	socket.on("joinRoom",function(dataG){
-		for(var i = 0; i < rooms.length; i++ ){
-			if(rooms[i].id == dataG.id) {
-				rooms[i].players.push(dataG.players[0]);
-				//socket.broadcast.emit("joinedRoom", rooms[i]);
-				io.sockets.emit("joinedRoom", rooms[i]);
-				console.log(rooms[i]);
-			}
-		}
-	});
 	
 	socket.on("move",function(dataG){
 		socket.broadcast.emit("OnMove",dataG);

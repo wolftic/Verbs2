@@ -18,10 +18,12 @@ public class PlayerMovement : MonoBehaviour {
 		_rigidbody = GetComponent<Rigidbody> ();
 	}
 	
-	void Update () {
-		_networkPlayer.pos = transform.position;
+	void Update ()
+    {
+        _networkPlayer.pos = transform.position;
+        _networkPlayer.rot = transform.rotation;
 
-		_onGround = Physics.Raycast (transform.position, Vector3.down, 0.55f);
+        _onGround = Physics.Raycast (transform.position, Vector3.down, 0.55f);
 		Debug.DrawRay (transform.position, Vector3.down * 0.55f);
 
 		if (Input.GetButtonUp ("Jump") && _onGround) {

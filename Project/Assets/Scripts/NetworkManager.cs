@@ -10,95 +10,68 @@ public class Name
     public string name;
 }
 
-[System.Serializable]
-public class Room
-{
-    public int id;
-    public List<PlayerPos> players = new List<PlayerPos>();
-}
-
 public class NetworkManager : MonoBehaviour {
 
     [SerializeField]
     private Name pname = new Name();
 
     [SerializeField]
-    private List<Room> _rooms = new List<Room>();
+    private List<Name> _players = new List<Name>();
 
     private SocketIOComponent _socket;
 
     [SerializeField]
-    private GameObject hostPrefab;
+    private GameObject _localPrefab;
+    [SerializeField]
+    private GameObject _otherPrefab;
 
     void Start()
     {
         _socket = GameObject.Find("Socket").GetComponent<SocketIOComponent>();
-        _socket.On("roomCreated", RoomCreated);
         _socket.On("name", SetName);
+        _socket.On("otherStart", otherStart);
     }
 
     void SetName(SocketIOEvent e)
     {
         Name n = JsonMapper.ToObject<Name>(e.data.ToString());
         pname.name = n.name;
+        _players.Add(n);
+
+        SpawnPlayers();
     }
 
-    public void CreateRoom()
+    public void StartGame()
     {
-        Room room = new Room();
-        room.id = 10/*Random.Range(1, 100)*/;
-        GameObject host = Instantiate(hostPrefab);
-        host.GetComponent<NetworkHost>().self = room;
-        _rooms.Add(room);
+        GameObject.Find("Button").active = false;
 
-        PlayerPos player = new PlayerPos();
-        player.name = pname.name;
+        GameObject local = Instantiate(_localPrefab, new Vector3(Random.Range(-6, 3), 1, Random.Range(-6, 3)), Quaternion.identity) as GameObject;
+        local.transform.name = pname.name;
+        GameObject.FindGameObjectWithTag("MainCamera").GetComponent<PlayerCamera>().target = local.transform;
 
-        host.GetComponent<NetworkHost>().localPlayer = player;
-
-        room.players.Add(player);
-
-        string roomString = JsonMapper.ToJson(room);
-        _socket.Emit("newRoom", new JSONObject(roomString));
+        string d = JsonMapper.ToJson(pname);
+        _socket.Emit("onOtherStart", new JSONObject(d));
     }
 
-    void RoomCreated(SocketIOEvent e)
+    void otherStart(SocketIOEvent e)
     {
-        Room room = JsonMapper.ToObject<Room>(e.data.ToString());
-        _rooms.Add(room);
+        Name n = JsonMapper.ToObject<Name>(e.data.ToString());
+        _players.Add(n);
+        GameObject other = Instantiate(_otherPrefab);
+        other.transform.name = n.name;
+
     }
 
-    public void JoinRoom()
+    void SpawnPlayers()
     {
-        /*for (int i = 0; i < _rooms.Count; i++)
+        for (int i = 0; i < _players.Count; i++)
         {
-            if(_rooms[i].id == 10)
+            if (_players[i].name != pname.name)
             {
-                PlayerPos player = new PlayerPos();
-                player.name = pname.name;
-
-                _rooms[i].players.Add(player);
-
-                GameObject host = Instantiate(hostPrefab);
-                host.GetComponent<NetworkHost>().self = _rooms[i];
-                host.GetComponent<NetworkHost>().localPlayer = player;
-
-                string roomString = JsonMapper.ToJson(_rooms[i]);
-                _socket.Emit("joinRoom",new JSONObject(roomString));
+                GameObject other = Instantiate(_otherPrefab);
+                Debug.Log(_players[i].name);
+                other.transform.name = _players[i].name;
             }
-        }*/
-
-        Room j = new Room();
-        j.id = 10;
-
-        PlayerPos player = new PlayerPos();
-        player.name = pname.name;
-        j.players.Add(player);
-
-        GameObject host = Instantiate(hostPrefab);
-        host.GetComponent<NetworkHost>().localPlayer = player;
-
-        string roomString = JsonMapper.ToJson(j);
-        _socket.Emit("joinRoom", new JSONObject(roomString));
+        }
     }
 }

@@ -10,6 +10,9 @@ public class PlayerPos
     public double x;
     public double y;
     public double z;
+    public double rotX;
+    public double rotY;
+    public double rotZ;
 }
 
 public class NetworkPlayer : MonoBehaviour {
@@ -17,6 +20,7 @@ public class NetworkPlayer : MonoBehaviour {
     private SocketIOComponent _socket;
 
     public Vector3 pos;
+    public Quaternion rot;
 
 	PlayerPos p;
 
@@ -35,6 +39,9 @@ public class NetworkPlayer : MonoBehaviour {
         p.x = (double)pos.x;
         p.y = (double)pos.y;
         p.z = (double)pos.z;
+        p.rotX = (double)rot.x;
+        p.rotY = (double)rot.y;
+        p.rotZ = (double)rot.z;
         string position = JsonMapper.ToJson(p);
         _socket.Emit("move", new JSONObject(position));
     }
