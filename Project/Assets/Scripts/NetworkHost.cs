@@ -27,8 +27,9 @@ public class NetworkHost : MonoBehaviour {
 
     void JoinedRoom(SocketIOEvent e)
     {
-        PlayerPos n = JsonMapper.ToObject<PlayerPos>(e.data.ToString());
-        self.players.Add(n);
+        Room r = JsonMapper.ToObject<Room>(e.data.ToString());
+        //self.players.Add(r.players[1]);
+        self = r;
     }
 
     public void StartGame(bool l)
@@ -37,10 +38,12 @@ public class NetworkHost : MonoBehaviour {
         {
             SceneManager.LoadScene("lorenzo 1");
             Invoke("SpawnPlayers", 2.0f);
+            this.GetComponent<Canvas>().GetComponent<Canvas>().enabled = false;
             _socket.Emit("StartGame");
         } else
         {
             SceneManager.LoadScene("lorenzo 1");
+            this.GetComponent<Canvas>().GetComponent<Canvas>().enabled = false;
             Invoke("SpawnPlayers", 2.0f);
         }
     }
@@ -57,12 +60,15 @@ public class NetworkHost : MonoBehaviour {
         {
             if (self.players[i].name == localPlayer.name)
             {
-                GameObject local = Instantiate(_localPrefab);
+                GameObject local = Instantiate(_localPrefab,new Vector3(Random.Range(-6,3),1,Random.Range(-6,3)),Quaternion.identity) as GameObject;
+                local.transform.name = self.players[i].name;
                 GameObject.FindGameObjectWithTag("MainCamera").GetComponent<PlayerCamera>().target = local.transform;
             }
             else
             {
                 GameObject other = Instantiate(_otherPrefab);
+                Debug.Log(self.players[i].name);
+                other.transform.name = self.players[i].name;
             }
         }
     }

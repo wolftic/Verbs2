@@ -5,6 +5,7 @@ using System.Collections;
 [RequireComponent(typeof(PlayerAttack))]
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour {
+    [SerializeField]
 	private NetworkPlayer _networkPlayer;
 	private Rigidbody _rigidbody;
 

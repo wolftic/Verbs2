@@ -5,6 +5,12 @@ using SocketIO;
 using LitJson;  
 
 [System.Serializable]
+public class Name
+{
+    public string name;
+}
+
+[System.Serializable]
 public class Room
 {
     public int id;
@@ -12,6 +18,9 @@ public class Room
 }
 
 public class NetworkManager : MonoBehaviour {
+
+    [SerializeField]
+    private Name pname = new Name();
 
     [SerializeField]
     private List<Room> _rooms = new List<Room>();
@@ -24,7 +33,14 @@ public class NetworkManager : MonoBehaviour {
     void Start()
     {
         _socket = GameObject.Find("Socket").GetComponent<SocketIOComponent>();
-        _socket.On("roomCreated", RoomCreated); 
+        _socket.On("roomCreated", RoomCreated);
+        _socket.On("name", SetName);
+    }
+
+    void SetName(SocketIOEvent e)
+    {
+        Name n = JsonMapper.ToObject<Name>(e.data.ToString());
+        pname.name = n.name;
     }
 
     public void CreateRoom()
@@ -36,7 +52,7 @@ public class NetworkManager : MonoBehaviour {
         _rooms.Add(room);
 
         PlayerPos player = new PlayerPos();
-        player.name = "hey";
+        player.name = pname.name;
 
         host.GetComponent<NetworkHost>().localPlayer = player;
 
@@ -54,13 +70,13 @@ public class NetworkManager : MonoBehaviour {
 
     public void JoinRoom()
     {
-        PlayerPos player = new PlayerPos();
-        player.name = "hoi";
-
-        for (int i = 0; i < _rooms.Count; i++)
+        /*for (int i = 0; i < _rooms.Count; i++)
         {
             if(_rooms[i].id == 10)
             {
+                PlayerPos player = new PlayerPos();
+                player.name = pname.name;
+
                 _rooms[i].players.Add(player);
 
                 GameObject host = Instantiate(hostPrefab);
@@ -70,6 +86,19 @@ public class NetworkManager : MonoBehaviour {
                 string roomString = JsonMapper.ToJson(_rooms[i]);
                 _socket.Emit("joinRoom",new JSONObject(roomString));
             }
-        }
+        }*/
+
+        Room j = new Room();
+        j.id = 10;
+
+        PlayerPos player = new PlayerPos();
+        player.name = pname.name;
+        j.players.Add(player);
+
+        GameObject host = Instantiate(hostPrefab);
+        host.GetComponent<NetworkHost>().localPlayer = player;
+
+        string roomString = JsonMapper.ToJson(j);
+        _socket.Emit("joinRoom", new JSONObject(roomString));
     }
 }

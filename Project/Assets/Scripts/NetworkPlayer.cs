@@ -20,10 +20,14 @@ public class NetworkPlayer : MonoBehaviour {
 
 	PlayerPos p;
 
+    bool isDead = false;
+
     void Start()
     {
 		p = new PlayerPos();
+        p.name = transform.name;
         _socket = GameObject.Find("Socket").GetComponent<SocketIOComponent>();
+        _socket.On("OnDead", OnDead);
     }
 
     void Update()
@@ -33,5 +37,23 @@ public class NetworkPlayer : MonoBehaviour {
         p.z = (double)pos.z;
         string position = JsonMapper.ToJson(p);
         _socket.Emit("move", new JSONObject(position));
+    }
+
+    void OnDead(SocketIOEvent e)
+    {
+        PlayerPos d = JsonMapper.ToObject<PlayerPos>(e.data.ToString());
+        if (d.name == p.name)
+        {
+            isDead = true;
+            gameObject.SetActive(false);
+            Invoke("Respawn", 5f);
+        }
+    }
+
+    void Respawn()
+    {
+        gameObject.SetActive(true);
+        string position = JsonMapper.ToJson(p);
+        _socket.Emit("respawn", new JSONObject(position));
     }
 }

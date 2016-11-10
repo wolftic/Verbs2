@@ -8,15 +8,19 @@ public class PlayerAttack : MonoBehaviour {
 	
 	}
 
-	void Update () {
-		RaycastHit hit;
+    void Update()
+    {
+        RaycastHit hit;
 
-		if(Input.GetButtonDown("Fire1")) {
-			if (Physics.Raycast (transform.position, Vector3.forward, out hit)) {
-				if (hit.transform.tag == "Player") {
-					hit.transform.GetComponent<OtherNetworkPlayer> ().Hit ();
-				}
-			}
-		}
-	}
+        if (Input.GetButtonDown("Fire1"))
+        {
+            if (Physics.Raycast(transform.position, transform.forward.normalized, out hit))
+            {
+                if (hit.transform.tag == "Player")
+                {
+                    hit.transform.GetComponent<OtherNetworkPlayer>().Hit();
+                }
+            }
+        }
+    }
 }
