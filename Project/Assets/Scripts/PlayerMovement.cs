@@ -26,8 +26,12 @@ public class PlayerMovement : MonoBehaviour {
         _onGround = Physics.Raycast (transform.position, Vector3.down, 0.55f);
 		Debug.DrawRay (transform.position, Vector3.down * 0.55f);
 
-		if (Input.GetButtonUp ("Jump") && _onGround) {
+		if (Input.GetButtonDown ("Jump") && _onGround) {
 			_rigidbody.AddForce(new Vector3(0, _jumpForce, 0), ForceMode.Impulse);
+		}
+
+		if (transform.position.y < -10) {
+			transform.position = new Vector3 (0, 10, 0);
 		}
 	}
 
