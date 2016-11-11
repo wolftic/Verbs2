@@ -6,7 +6,7 @@ using System.Collections;
 public class OtherNetworkPlayer : MonoBehaviour {
 	public PlayerPos p;
 	private SocketIOComponent _socket;
-    private bool isDead = false;
+    private bool _isDead = false;
 
 	void Start () {
 		p = new PlayerPos ();
@@ -28,7 +28,7 @@ public class OtherNetworkPlayer : MonoBehaviour {
 	public void Hit() {
 		string position = JsonMapper.ToJson(p);
 		_socket.Emit ("dead", new JSONObject(position));
-        isDead = true;
+        _isDead = true;
         gameObject.SetActive(false);
 	}
 
@@ -37,7 +37,7 @@ public class OtherNetworkPlayer : MonoBehaviour {
         PlayerPos d = JsonMapper.ToObject<PlayerPos>(e.data.ToString());
         if (d.name == p.name)
         {
-            isDead = true;
+            _isDead = true;
             gameObject.SetActive(false);
         }
     }
@@ -47,7 +47,7 @@ public class OtherNetworkPlayer : MonoBehaviour {
         PlayerPos d = JsonMapper.ToObject<PlayerPos>(e.data.ToString());
         if (d.name == p.name)
         {
-            isDead = false;
+            _isDead = false;
             gameObject.SetActive(true);
         }
     }
